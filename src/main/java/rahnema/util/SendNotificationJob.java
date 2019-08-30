@@ -1,9 +1,6 @@
 package rahnema.util;
 
-import org.quartz.Job;
-import org.quartz.JobDataMap;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
+import org.quartz.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import rahnema.domain.BookmarkDomain;
 import rahnema.model.BookmarkNotificaion;
@@ -18,6 +15,7 @@ public class SendNotificationJob implements Job {
         NotificationService notificationService = (NotificationService) jobDataMap.get("service");
         SimpMessagingTemplate template = (SimpMessagingTemplate) jobDataMap.get("template");
         String token = (String) jobDataMap.get("token");
-        new BookmarkNotificaion(bookmarkDomain, userId, template, notificationService).setTokenString(token).send();
+        Scheduler scheduler = (Scheduler) jobDataMap.get("scheduler");
+        new BookmarkNotificaion(bookmarkDomain, userId, template, notificationService, scheduler).setTokenString(token).send();
     }
 }

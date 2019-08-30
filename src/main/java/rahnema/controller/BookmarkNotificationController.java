@@ -32,10 +32,15 @@ public class BookmarkNotificationController {
 
     @MessageMapping("/bookmark")
     public void setNotification(@RequestBody BookmarkDomain bookmarkDomain, StompPrincipal principal) {
-        bookmarkDomain = new BookmarkDomain().setAuctionId(1).setDueDate(new Date().getTime()+ 10000);
-        new BookmarkNotificaion(bookmarkDomain, principal.getUserId(), template, service).setTokenString(token).set();
+        bookmarkDomain = new BookmarkDomain().setAuctionId(1).setDueDate(new Date().getTime() + 10000);
+        new BookmarkNotificaion(bookmarkDomain, principal.getUserId(), template, service, service.getScheduler()).setTokenString(token).set();
     }
 
+    @MessageMapping("/cancel")
+    public void cancelNotification(@RequestBody BookmarkDomain bookmarkDomain, StompPrincipal principal) {
+        bookmarkDomain = new BookmarkDomain().setAuctionId(1).setDueDate(new Date().getTime() + 10000);
+        service.cancelJob(principal.getUserId(), bookmarkDomain);
+    }
 
     @EventListener
     private void handleSessionConnected(SessionConnectEvent event) {

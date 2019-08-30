@@ -1,7 +1,6 @@
 package rahnema.model;
 
 import org.quartz.*;
-import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -24,16 +23,19 @@ public class BookmarkNotificaion implements INotification {
     private BookmarkDomain bookmarkDomain;
     private String userId;
     private String tokenString;
+    private Scheduler jobScheduler;
 
 
     public BookmarkNotificaion(BookmarkDomain bookmarkDomain,
                                String userId,
                                SimpMessagingTemplate messagingTemplate,
-                               NotificationService notificationService) {
+                               NotificationService notificationService,
+                               Scheduler jobScheduler) {
         this.bookmarkDomain = bookmarkDomain;
         this.userId = userId;
         this.messagingTemplate = messagingTemplate;
         this.notificationService = notificationService;
+        this.jobScheduler = jobScheduler;
     }
 
     public BookmarkNotificaion setTokenString(String tokenString) {
@@ -59,9 +61,8 @@ public class BookmarkNotificaion implements INotification {
         JobDetail jobDetail = getJobDetail();
         Trigger trigger = getTrigger();
         try {
-            Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
-            scheduler.start();
-            scheduler.scheduleJob(jobDetail, trigger);
+            notificationService.addJob(jobDetail);
+            jobScheduler.scheduleJob(jobDetail, trigger);
         } catch (SchedulerException e) {
             e.printStackTrace();
         }
@@ -82,6 +83,7 @@ public class BookmarkNotificaion implements INotification {
         jobDataMap.put("service", notificationService);
         jobDataMap.put("template", messagingTemplate);
         jobDataMap.put("token", tokenString);
+        jobDataMap.put("scheduler", jobScheduler);
 
         return JobBuilder.
                 newJob(SendNotificationJob.class)
