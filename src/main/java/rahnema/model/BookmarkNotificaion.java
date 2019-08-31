@@ -45,6 +45,7 @@ public class BookmarkNotificaion implements INotification {
 
     @Override
     public void send() {
+        System.out.println("sending ...");
         StompPrincipal stompPrincipal = notificationService.getUsernameFromEmail(email).orElseThrow(IllegalArgumentException::new);
         String url = "http://localhost:8080/auction/notification/" + bookmarkDomain.getAuctionId();
         RestTemplate restTemplate = new RestTemplate();
@@ -54,6 +55,7 @@ public class BookmarkNotificaion implements INotification {
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
         messagingTemplate.convertAndSendToUser(stompPrincipal.getName(), "/notification", response.getBody());
+        System.out.println("sent to " + stompPrincipal.getEmail() + "as " + stompPrincipal.getName());
     }
 
     @Override

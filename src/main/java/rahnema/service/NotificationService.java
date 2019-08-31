@@ -35,6 +35,7 @@ public class NotificationService {
     }
 
     public Optional<StompPrincipal> getUsernameFromEmail(String email) {
+        System.out.println("email is " + email);
         return principals.stream().filter(principal ->
                 principal.getEmail().equals(email)).findAny();
     }
