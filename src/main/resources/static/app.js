@@ -15,7 +15,7 @@ function setConnected(connected) {
 function connect() {
     var socket = new SockJS('/notif');
     stompClient = Stomp.over(socket);
-    stompClient.connect({}, "1",  function (frame) {
+    stompClient.connect("erfanianmahdi00@gmail.com", "sajad.dadgar98@gmail.com",  function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
     });
@@ -33,14 +33,10 @@ function subscribe() {
 	stompClient.subscribe('/user/notification', function (auctionStatus) {
 		showGreeting(auctionStatus);
 	});
-
-
-
-
 }
 
 function unsubscribe() {
-    stompClient.unsubscribe('/topic/auction/' + $("#auction").val());
+    stompClient.send("/app/cancel", {}, JSON.stringify({'dueDate': $("#name").val()}));
 }
 
 function sendName() {

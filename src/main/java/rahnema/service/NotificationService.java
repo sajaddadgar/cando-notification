@@ -34,9 +34,9 @@ public class NotificationService {
         return scheduler;
     }
 
-    public Optional<StompPrincipal> getUsernameFromId(String id) {
+    public Optional<StompPrincipal> getUsernameFromEmail(String email) {
         return principals.stream().filter(principal ->
-                principal.getUserId().equals(id)).findAny();
+                principal.getEmail().equals(email)).findAny();
     }
 
     public void addJob(JobDetail jobDetail) {
@@ -60,11 +60,11 @@ public class NotificationService {
     public void connectSession(SessionConnectEvent event) {
         StompPrincipal user = (StompPrincipal) event.getUser();
         StompHeaderAccessor wrap = StompHeaderAccessor.wrap(event.getMessage());
-        String passcode = wrap.getPasscode();
+        String email = wrap.getPasscode();
         assert user != null;
-        user.setUserId(passcode);
+        user.setEmail(email);
         principals.forEach(principal -> {
-            if (principal.getUserId().equals(passcode))
+            if (principal.getEmail().equals(email))
                 principals.remove(principal);
         });
         principals.add(user);

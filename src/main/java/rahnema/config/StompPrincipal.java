@@ -5,18 +5,18 @@ import java.security.Principal;
 public class StompPrincipal implements Principal {
 
     private String username;
-    private String userId;
+    private String email;
 
     public StompPrincipal(String username) {
         this.username = username;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public String getEmail() {
+        return email;
     }
 
-    public String getUserId() {
-        return userId;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override

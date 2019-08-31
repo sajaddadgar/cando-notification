@@ -21,18 +21,18 @@ public class BookmarkNotificaion implements INotification {
     private SimpMessagingTemplate messagingTemplate;
     private NotificationService notificationService;
     private BookmarkDomain bookmarkDomain;
-    private String userId;
+    private String email;
     private String tokenString;
     private Scheduler jobScheduler;
 
 
     public BookmarkNotificaion(BookmarkDomain bookmarkDomain,
-                               String userId,
+                               String email,
                                SimpMessagingTemplate messagingTemplate,
                                NotificationService notificationService,
                                Scheduler jobScheduler) {
         this.bookmarkDomain = bookmarkDomain;
-        this.userId = userId;
+        this.email = email;
         this.messagingTemplate = messagingTemplate;
         this.notificationService = notificationService;
         this.jobScheduler = jobScheduler;
@@ -45,7 +45,7 @@ public class BookmarkNotificaion implements INotification {
 
     @Override
     public void send() {
-        StompPrincipal stompPrincipal = notificationService.getUsernameFromId(userId).orElseThrow(IllegalArgumentException::new);
+        StompPrincipal stompPrincipal = notificationService.getUsernameFromEmail(email).orElseThrow(IllegalArgumentException::new);
         String url = "http://localhost:8080/auction/notification/" + bookmarkDomain.getAuctionId();
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -59,6 +59,7 @@ public class BookmarkNotificaion implements INotification {
     @Override
     public void set() {
         JobDetail jobDetail = getJobDetail();
+        System.out.println("new job received");
         Trigger trigger = getTrigger();
         try {
             notificationService.addJob(jobDetail);
@@ -78,7 +79,7 @@ public class BookmarkNotificaion implements INotification {
 
     private JobDetail getJobDetail() {
         JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put("user", userId);
+        jobDataMap.put("user", email);
         jobDataMap.put("domain", bookmarkDomain);
         jobDataMap.put("service", notificationService);
         jobDataMap.put("template", messagingTemplate);
