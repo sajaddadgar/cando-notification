@@ -11,8 +11,8 @@ import rahnema.config.StompPrincipal;
 import rahnema.domain.BookmarkDomain;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 @Service
 public class NotificationService {
@@ -34,10 +34,10 @@ public class NotificationService {
         return scheduler;
     }
 
-    public Optional<StompPrincipal> getUsernameFromEmail(String email) {
+    public Stream<StompPrincipal> getUsernameFromEmail(String email) {
         System.out.println("email is " + email);
         return principals.stream().filter(principal ->
-                principal.getEmail().equals(email)).findAny();
+                principal.getEmail().equals(email));
     }
 
     public void addJob(JobDetail jobDetail) {
@@ -64,10 +64,10 @@ public class NotificationService {
         String email = wrap.getPasscode();
         assert user != null;
         user.setEmail(email);
-        principals.forEach(principal -> {
-            if (principal.getEmail().equals(email))
-                principals.remove(principal);
-        });
+//        principals.forEach(principal -> {
+//            if (principal.getEmail().equals(email))
+//                principals.remove(principal);
+//        });
         principals.add(user);
     }
 }
