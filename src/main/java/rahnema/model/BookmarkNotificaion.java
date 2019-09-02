@@ -61,7 +61,7 @@ public class BookmarkNotificaion implements INotification {
     @Override
     public void set() {
         JobDetail jobDetail = getJobDetail();
-        System.out.println("new job received");
+        System.out.println("new job received from " + this.email);
         Trigger trigger = getTrigger();
         try {
             notificationService.addJob(jobDetail);
