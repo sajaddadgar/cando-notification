@@ -13,6 +13,7 @@ import rahnema.service.NotificationService;
 import rahnema.util.SendNotificationJob;
 
 import java.util.Date;
+import java.util.Optional;
 
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 
@@ -46,16 +47,20 @@ public class BookmarkNotificaion implements INotification {
     @Override
     public void send() {
         System.out.println("sending ...");
-        StompPrincipal stompPrincipal = notificationService.getUsernameFromEmail(email).orElseThrow(IllegalArgumentException::new);
-        String url = "http://localhost:8080/auction/notification/" + bookmarkDomain.getAuctionId();
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Authorization", "Bearer " + tokenString);
-        HttpEntity<String> request = new HttpEntity<String>(httpHeaders);
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+        Optional<StompPrincipal> stompPrincipalOptional = notificationService.getUsernameFromEmail(email);
+        if (stompPrincipalOptional.isPresent()) {
+            StompPrincipal stompPrincipal = stompPrincipalOptional.get();
+            String url = "http://localhost:8080/auction/notification/" + bookmarkDomain.getAuctionId();
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add("Authorization", "Bearer " + tokenString);
+            HttpEntity<String> request = new HttpEntity<String>(httpHeaders);
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
-        messagingTemplate.convertAndSendToUser(stompPrincipal.getName(), "/notification", response.getBody());
-        System.out.println("sent to " + stompPrincipal.getEmail() + "as " + stompPrincipal.getName());
+            messagingTemplate.convertAndSendToUser(stompPrincipal.getName(), "/notification", response.getBody());
+            System.out.println("sent to " + stompPrincipal.getEmail() + "as " + stompPrincipal.getName());
+        } else
+            System.out.println("not found " + email);
     }
 
     @Override
