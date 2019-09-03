@@ -13,6 +13,7 @@ import rahnema.service.NotificationService;
 import rahnema.util.SendNotificationJob;
 
 import java.util.Date;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
@@ -93,7 +94,7 @@ public class BookmarkNotificaion implements INotification {
 
         return JobBuilder.
                 newJob(SendNotificationJob.class)
-                .withIdentity("notification")
+                .withIdentity("notification" + UUID.randomUUID().toString())
                 .usingJobData(jobDataMap).build();
     }
 
