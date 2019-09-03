@@ -77,7 +77,7 @@ public class BookmarkNotificaion implements INotification {
 
     private Trigger getTrigger() {
         return TriggerBuilder.
-                newTrigger().withIdentity("trigger")
+                newTrigger().withIdentity("trigger" + UUID.randomUUID().toString())
                 .startAt(new Date(bookmarkDomain.getDueDate()))
                 .withSchedule(simpleSchedule().withIntervalInSeconds(1))
                 .build();
